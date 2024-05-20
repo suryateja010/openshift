@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wordpress
+  name: wordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      volumes:
+      - name: wordpress-storage
+        persistentVolumeClaim:
+          claimName: wordpress-pvc-jegan # Replace 'jegan' with your name
+
+      containers:
+      - image: bitnami/wordpress:latest
+        name: wordpress
+
+        env:
+        - name: WORDPRESS_DATABASE_HOST
+          value: mariadb # This is the mariadb service name - service discovery 
+
+        - name: WORDPRESS_DATABASE_PORT_NUMBER
+          value: "3306"
+
+        - name: WORDPRESS_DATABASE_USER
+          value: root
+
+        - name: WORDPRESS_DATABASE_PASSWORD
+          value: root@123
+
+        - name: WORDPRESS_DATABASE_NAME
+          value: bitnami_wordpress 
+
+        volumeMounts:
+        - name: wordpress-storage
+          mountPath: /bitnami/wordpress

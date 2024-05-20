@@ -1,0 +1,114 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-configuration
+data:
+  jdbc-url: "jdbc:mysql://mariadb:3306/tektutor"
+  db_name: wordpress
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mariadb-login-credentials 
+data:
+  username: cm9vdA==
+  password: cm9vdEAxMjM=
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mariadb-pv-jegan  # Replace 'jegan' with your name
+  labels:
+    name: jegan # Replace 'jegan' with your name
+spec:
+  capacity:
+    storage: 100Mi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce # All Pods from the same node can access this Persistent volume(PV)
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.108 # Replace this to 10.10.15.101, 10.10.15.102, 10.10.15.103 depending on which server you are connected to
+    path: /var/nfs/jegan/mariadb  # Replace with /var/nfs/user01/mariadb if you are connecting as user01
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-pvc-jegan  # Replace 'jegan' with your name
+spec:
+  selector:
+    matchLabels:
+      name: jegan # Replace 'jegan' with your name
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mariadb
+  name: mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      volumes:
+      - name: mariadb-storage
+        persistentVolumeClaim:
+          claimName: mariadb-pvc-jegan # Replace 'jegan' with your name
+
+      containers:
+      - image: bitnami/mariadb:latest
+        name: mariadb
+
+        env:
+        - name: MARIADB_ROOT_USER
+          valueFrom: 
+            secretKeyRef:
+              name: mariadb-login-credentials
+              key: username
+
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-login-credentials
+              key: password
+
+        - name: MARIADB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-configuration
+              key: db_name
+
+        volumeMounts:
+        - name: mariadb-storage
+          mountPath: /bitnami/mariadb/data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: mariadb
+  name: mariadb
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: mariadb
+status:
+  loadBalancer: {}
+---
