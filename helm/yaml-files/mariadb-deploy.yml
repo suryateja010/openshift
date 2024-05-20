@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mariadb
+  name: mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      volumes:
+      - name: mariadb-storage
+        persistentVolumeClaim:
+          claimName: mariadb-pvc-jegan # Replace 'jegan' with your name
+
+      containers:
+      - image: bitnami/mariadb:latest
+        name: mariadb
+
+        env:
+        - name: MARIADB_ROOT_USER
+          valueFrom: 
+            secretKeyRef:
+              name: mariadb-login-credentials
+              key: username
+
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-login-credentials
+              key: password
+
+        - name: MARIADB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-configuration
+              key: db_name
+
+        volumeMounts:
+        - name: mariadb-storage
+          mountPath: /bitnami/mariadb/data

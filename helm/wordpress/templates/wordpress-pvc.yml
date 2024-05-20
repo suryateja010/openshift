@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc-{{.Values.pvLabel}}  # Replace 'jegan' with your name
+spec:
+  selector:
+    matchLabels:
+      name: {{.Values.pvLabel}} 
+      tier: fe
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi

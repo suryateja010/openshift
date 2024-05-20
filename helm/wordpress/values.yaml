@@ -1,0 +1,6 @@
+wordpressPodCount: 1
+pvLabel: 'jegan' # Replace 'jegan' with your name
+nfsServerIP: '192.168.1.108'
+nfsMariaDBPVPath: '/var/nfs/jegan/mariadb'
+nfsWordpressPVPath: '/var/nfs/jegan/wordpress'
+

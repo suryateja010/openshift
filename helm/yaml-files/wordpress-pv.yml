@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wordpress-pv-jegan  # Replace 'jegan' with your name
+  labels:
+    name: jegan # Replace 'jegan' with your name
+spec:
+  capacity:
+    storage: 100Mi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce # All Pods from the same node can access this Persistent volume(PV)
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.108 # Replace this to 10.10.15.101, 10.10.15.102, 10.10.15.103 depending on which server you are connected to
+    path: /var/nfs/jegan/wordpress  # Replace with /var/nfs/user01/wordpress if you are connecting as user01
