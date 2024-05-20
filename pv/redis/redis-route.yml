@@ -1,0 +1,17 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/instance: redis
+  name: redis
+spec:
+  port:
+    targetPort: 6379-tcp
+  to:
+    kind: ""
+    name: redis
+    weight: null
+status: {}
