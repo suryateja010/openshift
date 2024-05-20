@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wordpress-pv-jegan # Replace 'jegan' with your name
+  labels:
+    name: jegan # Replace 'jegan' with your name
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.1.127 # Replace this IP with your CentOS IP
+    path: /var/nfs/jegan/wordpress # Replace this path with /mnt/nfs/user1/wordpress folder, replace user1 with your centos username 

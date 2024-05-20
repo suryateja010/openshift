@@ -1,0 +1,41 @@
+schemaVersion: 2.2.0
+metadata:
+  name: nginx
+  version: latest
+  displayName: Nginx Web Server 
+  description: Nginx Web Server 
+  tags: ["WebServer", "Nginx"]
+  projectType: "Nginx"
+  language: "JavaScript"
+  attributes:
+    alpha.dockerimage-port: 8080 
+  provider: Red Hat
+  supportUrl: https://github.com/devfile-samples/devfile-support#support-information
+parent:
+  id: docker 
+  registryUrl: "https://registry.devfile.io"
+components:
+  - name: kubernetes-deploy
+    attributes:
+      deployment/replicas: 1
+      deployment/cpuRequest: 10m
+      deployment/memoryRequest: 50Mi
+      deployment/container-port: 3001
+    kubernetes:
+      uri: deploy.yaml
+      endpoints:
+        - name: http-8080
+          targetPort: 8080 
+          path: /
+          secure: true
+commands:
+  - id: deployk8s
+    apply:
+      component: kubernetes-deploy
+  - id: deploy
+    composite:
+      commands:
+        - deployk8s
+      group:
+        kind: deploy
+        isDefault: true
